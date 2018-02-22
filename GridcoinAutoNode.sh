@@ -1,95 +1,74 @@
 #!/bin/bash
-echo "########### The server will reboot when the script is complete"
-echo "########### Changing to /home/ dir"
+echo "-=-=-=- THE SERVER WILL REBOOT AFTER THE SCRIPT COMPLETES -=-=-=-"
 cd ~
 
-# echo "########### Disabling IPv6"
-# sed -i '$anet.ipv6.conf.all.disable_ipv6 = 1' /etc/sysctl.conf
-# sed -i '$anet.ipv6.conf.default.disable_ipv6 = 1' /etc/sysctl.conf
-# sed -i '$anet.ipv6.conf.lo.disable_ipv6 = 1' /etc/sysctl.conf
-# sysctl -p
+# Installing/upgrading necessary packages.
+apt-get -y update && apt-get -y upgrade; apt-get -y install software-properties-common && apt-get -y install sudo && apt-get -y install unzip && apt-get -y install curl
 
-echo "########### Adding Google DNS"
-sed -i '$a\        dns-nameservers 8.8.8.8 8.8.4.4' /etc/network/interfaces
+#Figuring out distribution/installing distribution specific packages.
+dist=$(lsb_release -ds 2>/dev/null || cat /etc/*release 2>/dev/null | head || uname -om)
+if echo $dist | grep -q "jessie"; then echo "deb https://dl.bintray.com/gridcoin/deb jessie stable" >> /etc/apt/sources.list && apt-get install -y --force-yes apt-transport-https && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 379CE192D401AB61;
+elif echo $dist | grep -q "stretch"; then echo "deb https://dl.bintray.com/gridcoin/deb stretch stable" >> /etc/apt/sources.list && apt-get install -y --force-yes apt-transport-https && curl -o Bintray.asc https://bintray.com/user/downloadSubjectPublicKey?username=bintray && apt-key add Bintray.asc && rm Bintray.asc;
+elif echo $dist | grep -q "Ubuntu"; then add-apt-repository -y ppa:gridcoin/gridcoin-stable;
+else echo "DISTRO NOT SUPPORTED" && exit
+fi
 
-echo "########### Adding Spideroak source"
-echo "38.121.104.79 spideroak.com" >> /etc/hosts
-
-echo "########### Installing necessary packages"
-apt-get -y dist-upgrade
-apt-get -y update && apt-get -y upgrade; apt-get install -y --no-install-recommends apt-utils && apt-get -y install software-properties-common && apt-get -y install sudo && apt-get -y install git && apt-get -y install gcc && apt-get -y install make && apt-get -y install unzip
-add-apt-repository -y ppa:gridcoin/gridcoin-stable
+#Installing Gridcoin daemon.
 apt-get -y update && apt-get -y upgrade; apt-get -y install gridcoinresearchd
 
-echo "########### Creating gridcoin user"
+# Creating gridcoin user.
 useradd -m gridcoin
 
-echo "########### Creating gridcoinresearch.conf file"
+# Creating gridcoinresearch.conf file.
 cd ~gridcoin
 sudo -u gridcoin mkdir .GridcoinResearch
 cd /home/gridcoin/.GridcoinResearch/
 
-#echo "########### Downloading and extracting bootstrap.zip"
-#sudo -u gridcoin wget https://spideroak.com/share/N4YFAZLQOBSXEMDP/public/d%3A/Gridcoin.Tools/Share/bootstrap.zip
-#sudo unzip bootstrap.zip
+# Pulling official snapshot.
+sudo -u gridcoin curl -O https://download.gridcoin.us/download/downloadstake/signed/snapshot.zip
+unzip snapshot.zip
 
-#Official snapshot
-sudo -u gridcoin wget https://download.gridcoin.us/download/downloadstake/signed/snapshot.zip
-sudo unzip snapshot.zip
-rm -rf snapshot.zip
-
-sudo chown -R gridcoin:gridcoin /home/gridcoin/.GridcoinResearch/*
+chown -R gridcoin:gridcoin /home/gridcoin/.GridcoinResearch/*
 config="gridcoinresearch.conf"
 sudo -u gridcoin touch $config
 echo "server=1" > $config
 echo "daemon=1" >> $config
 echo "rpcport=9332" >> $config
 echo "listen=1" >> $config
-echo "suppressupgrade=false" >> $config
-echo "suppressvoice=true" >> $config
-echo "enablespeech=false" >> $config
-echo "poolmining=false" >> $config
-echo "UpdatingLeaderboard=false" >> $config
-echo "cpumining=false" >> $config
-echo "addnode=node.tahvok.com" | sudo tee -a $config
-echo "addnode=grcexplorer.neuralminer.io" | sudo tee -a $config
-echo "addnode=grcnode01.neuralminer.io" | sudo tee -a $config
-echo "addnode=grcnode02.neuralminer.io" | sudo tee -a $config
-echo "addnode=grcnode03.neuralminer.io" | sudo tee -a $config
-echo "addnode=grcnode04.neuralminer.io" | sudo tee -a $config
-echo "addnode=grcnode05.neuralminer.io" | sudo tee -a $config
-echo "addnode=gridcoin.bunnyfeet.fi" | sudo tee -a $config
-echo "addnode=gridcoin.certic.info" | sudo tee -a $config
-echo "addnode=gridcoin.crypto.fans" | sudo tee -a $config
-echo "addnode=ils.gridcoin.co.il" | sudo tee -a $config
-echo "addnode=la.grcnode.co.uk" | sudo tee -a $config
-echo "addnode=london.grcnode.co.uk" | sudo tee -a $config
-echo "addnode=miami.grcnode.co.uk" | sudo tee -a $config
-echo "addnode=node.gridcoin.network" | sudo tee -a $config
-echo "addnode=node.gridcoin.us" | sudo tee -a $config
-echo "addnode=node1.gridcoin.xyz" | sudo tee -a $config
-echo "addnode=node1.chick3nman.com" | sudo tee -a $config
-echo "addnode=nuad.de" | sudo tee -a $config
-echo "addnode=quebec.gridcoin.co.il" | sudo tee -a $config
-echo "addnode=singapore.grcnode.co.uk" | sudo tee -a $config
-echo "addnode=toronto01.gridcoin.ifoggz-network.xzy" | sudo tee -a $config
-echo "addnode=vancouver01.gridcoin.ifoggz-network.xzy" | sudo tee -a $config
-echo "addnode=www.grcpool.com" | sudo tee -a $config
+echo "addnode=grcnode.tahvok.com" >> $config
+echo "addnode=grcexplorer.neuralminer.io" >> $config
+echo "addnode=grcnode01.neuralminer.io" >> $config
+echo "addnode=grcnode02.neuralminer.io" >> $config
+echo "addnode=grcnode03.neuralminer.io" >> $config
+echo "addnode=grcnode04.neuralminer.io" >> $config
+echo "addnode=grcnode05.neuralminer.io" >> $config
+echo "addnode=gridcoin.bunnyfeet.fi" >> $config
+echo "addnode=gridcoin.certic.info" >> $config
+echo "addnode=gridcoin.crypto.fans" >> $config
+echo "addnode=gridcoin.hopto.org" >> $config
+echo "addnode=ils.gridcoin.co.il" >> $config
+echo "addnode=la.grcnode.co.uk" >> $config
+echo "addnode=london.grcnode.co.uk" >> $config
+echo "addnode=miami.grcnode.co.uk" >> $config
+echo "addnode=node.gridcoin.network" >> $config
+echo "addnode=node.gridcoin.us" >> $config
+echo "addnode=node1.gridcoin.xyz" >> $config
+echo "addnode=node1.chick3nman.com" >> $config
+echo "addnode=nuad.de" >> $config
+echo "addnode=quebec.gridcoin.co.il" >> $config
+echo "addnode=seeds.gridcoin.ifoggz-network.xyz" >> $config
+echo "addnode=singapore.grcnode.co.uk" >> $config
+echo "addnode=toronto01.gridcoin.ifoggz-network.xzy" >> $config
+echo "addnode=vancouver01.gridcoin.ifoggz-network.xzy" >> $config
+echo "addnode=www.grcpool.com" >> $config
 
-randUser=`< /dev/random tr -dc A-Za-z0-9 | head -c64`
-randPass=`< /dev/random tr -dc A-Za-z0-9 | head -c64`
+randUser=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+randPass=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 echo "rpcuser=$randUser" >> $config
 echo "rpcpassword=$randPass" >> $config
 
-echo "########### Setting up chrony"
-cd ~
-git clone git://git.tuxfamily.org/gitroot/chrony/chrony.git
-cd ~/chrony
-./configure
+#Adding an alias.
+echo "alias grc='sudo -u gridcoin gridcoinresearchd -datadir=/home/gridcoin/.GridcoinResearch/'" >> ~/.bashrc
 
-echo "########### Cleaning up unnecessary packages"
-apt-get -y remove git && apt-get -y remove gcc && apt-get -y remove make && apt-get -y remove unzip
-apt-get -y autoremove
-
-echo "########### All done! Thank you for supporting the Gridcoin network! Server will now start."
-su - gridcoin -c gridcoinresearchd
+# All done! Thank you for supporting the Gridcoin network!
+sudo -u gridcoin gridcoinresearchd -datadir=/home/gridcoin/.GridcoinResearch/
