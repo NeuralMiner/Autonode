@@ -1,5 +1,4 @@
 #!/bin/bash
-echo "-=-=-=- THE SERVER WILL REBOOT AFTER THE SCRIPT COMPLETES -=-=-=-"
 cd ~
 
 # Installing/upgrading necessary packages.

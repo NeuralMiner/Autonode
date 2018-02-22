@@ -28,7 +28,7 @@ This script installs:
 
 This script:
 - Automatically figures out your distro and installs the daemon (`gridcoinresearchd`) for that specific distro.
-- Creates a 'gridcoin' user to run gridcoinresearchd under (safer than running client as root).
+- Creates a `gridcoin` user to run `gridcoinresearchd` (safer than running client as root).
 - Downloads snapshot instead of syncing from block 0 (edit script if you don't want it to do this).
-- Creates `grc` alias (for instance, you can run `grc getinfo`).
+- Creates a `grc` alias (for instance, you can run `grc getinfo`).
 - Starts daemon on script completion.
