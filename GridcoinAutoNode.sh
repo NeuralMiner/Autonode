@@ -1,7 +1,7 @@
 #!/bin/bash
 cd ~
 
-# Installing/upgrading necessary packages.
+#Installing/upgrading necessary packages.
 apt-get -y update && apt-get -y upgrade; apt-get -y install software-properties-common && apt-get -y install sudo && apt-get -y install unzip && apt-get -y install curl
 
 #Figuring out distribution/installing distribution specific packages.
@@ -15,15 +15,15 @@ fi
 #Installing Gridcoin daemon.
 apt-get -y update && apt-get -y upgrade; apt-get -y install gridcoinresearchd
 
-# Creating gridcoin user.
+#Creating gridcoin user.
 useradd -m gridcoin
 
-# Creating gridcoinresearch.conf file.
+#Creating gridcoinresearch.conf file.
 cd ~gridcoin
 sudo -u gridcoin mkdir .GridcoinResearch
 cd /home/gridcoin/.GridcoinResearch/
 
-# Pulling official snapshot.
+#Pulling official snapshot.
 sudo -u gridcoin curl -O https://download.gridcoin.us/download/downloadstake/signed/snapshot.zip
 unzip snapshot.zip
 
@@ -69,5 +69,5 @@ echo "rpcpassword=$randPass" >> $config
 #Adding an alias.
 echo "alias grc='sudo -u gridcoin gridcoinresearchd -datadir=/home/gridcoin/.GridcoinResearch/'" >> ~/.bashrc
 
-# All done! Thank you for supporting the Gridcoin network!
+#All done! Thank you for supporting the Gridcoin network!
 sudo -u gridcoin gridcoinresearchd -datadir=/home/gridcoin/.GridcoinResearch/
