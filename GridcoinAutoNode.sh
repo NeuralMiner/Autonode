@@ -61,7 +61,7 @@ addnode=quebec.gridcoin.co.il
 EOT"
 
 # Pull the official snapshot.
-runuser -l gridcoin -c 'cd /home/gridcoin/.GridcoinResearch && if [ ! -f "snapshot.zip" ]; then curl -O https://download.gridcoin.us/download/downloadstake/signed/snapshot.zip; fi'
+runuser -l gridcoin -c 'cd /home/gridcoin/.GridcoinResearch && if [ ! -f "snapshot.zip" ]; then curl -O https://download.gridcoin.us/downloadstake/signed/snapshot.zip; fi'
 runuser -l gridcoin -c 'cd /home/gridcoin/.GridcoinResearch && unzip -o snapshot.zip'
 
 # Create an alias.
